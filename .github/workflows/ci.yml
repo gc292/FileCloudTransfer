@@ -1,0 +1,29 @@
+name: Java CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: ['17', '21']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Test and package
+        run: ./mvnw --batch-mode --no-transfer-progress verify
+      - name: Upload runnable JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: file-cloud-transfer-java-${{ matrix.java }}
+          path: target/file-cloud-transfer.jar
